@@ -28,7 +28,7 @@ pub impl Display for Universe {
     }
 }
 pub impl Index<(u32, u32)> for Universe {
-    fn index(&self, (x, y): (u32, u32)) -> Cell& {
+    fn index(&self, (x, y): (u32, u32)) -> &Cell {
         let mut x_index = x % self.x_range;
         if x_index < 0 {
             x_index += x_range;
