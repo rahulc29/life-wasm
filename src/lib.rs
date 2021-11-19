@@ -23,7 +23,7 @@ impl Display for Universe {
                 match cell {
                     Cell::Alive => write!(f, "◼"),
                     Cell::Dead => write!(f, "◻"),
-                };
+                }.ok();
             }
             write!(f, "\n");
         }
@@ -34,35 +34,26 @@ impl Index<(u32, u32)> for Universe {
     type Output = Cell;
     fn index(&self, (x, y): (u32, u32)) -> &Cell {
         // TODO : avoid repetition in indexing code
-        let mut x_index = x % self.x_range;
-        if x_index < 0 {
-            x_index += self.x_range;
-        }
-        let mut y_index = y % self.y_range;
-        if y_index < 0 {
-            y_index += self.y_range;
-        }
-        return &self.grid[x_index as usize][y_index as usize];
+        let x_index = (x % self.x_range) as usize;
+        let y_index = (y % self.y_range) as usize;
+        return &self.grid[x_index][y_index];
     }
 }
 impl IndexMut<(u32, u32)> for Universe {
     fn index_mut(&mut self, (x, y): (u32, u32)) -> &mut Cell {
         // TODO : avoid repetition in indexing code
-        let mut x_index = x % self.x_range;
-        if x_index < 0 {
-            x_index += self.x_range;
-        }
-        let mut y_index = y % self.y_range;
-        if y_index < 0 {
-            y_index += self.y_range;
-        }
-        return &mut self.grid[x_index as usize][y_index as usize];
+        let x_index = (x % self.x_range) as usize;
+        let y_index = (y % self.y_range) as usize;
+        return &mut self.grid[x_index][y_index];
     }
 }
+#[wasm_bindgen]
 impl Universe {
-    // getter
-    pub fn grid(&self) -> &Vec<Vec<Cell>> {
-        return &self.grid;
+    pub fn height(&self) -> u32 {
+        return self.y_range;
+    }
+    pub fn width(&self) -> u32 {
+        return self.x_range;
     }
     pub fn render(&self) -> String {
         return self.to_string();
@@ -119,7 +110,8 @@ impl Universe {
         Universe::update_answer(&mut answer, self[(x - 1, y - 1)]);
         return answer;
     }
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> *const (u32, u32) {
+        let mut delta = Vec::new();
         // yes, `i` and `j` are intentionally interchanged
         // the tuple parameter is (x, y)
         // the tuple argument should be (i, j)
@@ -130,20 +122,24 @@ impl Universe {
                     Cell::Alive => {
                         if alive < 2 {
                             self[(i, j)] = Cell::Dead;
+                            delta.push((i, j));
                         } else if alive == 2 || alive == 3 {
                             self[(i, j)] = Cell::Alive;
                         } else if alive > 3 {
                             self[(i, j)] = Cell::Dead;
+                            delta.push((i, j));
                         }
                     }
                     Cell::Dead => {
                         if alive == 3 {
                             self[(i, j)] = Cell::Alive;
+                            delta.push((i, j));
                         }
                     }
                 }
             }
         }
+        return delta.as_ptr();
     }
 }
 impl From<(u32, u32)> for Universe {
