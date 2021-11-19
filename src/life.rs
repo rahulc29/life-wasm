@@ -1,7 +1,7 @@
 use std::ops::Index;
 pub enum Cell {
-    Dead,
-    Alive,
+    Dead = 0,
+    Alive = 1,
 }
 pub struct Universe {
     grid: Vec<Vec<Cell>>,
@@ -9,8 +9,16 @@ pub struct Universe {
     y_range: u32,
 }
 pub impl Index<(u32, u32)> for Universe {
-    fn index(&self, (x, y): (u32, u32)) {
-        return grid[x % self.x_range][y % self.y_range];
+    fn index(&self, (x, y): (u32, u32)) -> Cell& {
+        let mut x_index = x % self.x_range;
+        if x_index < 0 {
+            x_index += x_range;
+        }
+        let mut y_index = y % self.y_range;
+        if y_index < 0 {
+            y_index += y_range;
+        }
+        return &grid[x_index][y_index];
     }
 }
 pub impl Universe {
@@ -38,107 +46,22 @@ pub impl Universe {
     fn alive_cells(&self, (x, y): (u32, u32)) -> u32 {
         // TODO : Rewrite using macros
         let mut answer = 0u32;
-        if x == (self.x_range - 1) || y == (self.y_range - 1) {
-            if x == (x_range - 1) && y == (y_range - 1) {
-                // immediate up neighbour
-                update_answer(&answer, &grid[x][y + 1]);
-                // immediate left neighbour
-                update_answer(&answer, &grid[x - 1][y]);
-                // diagonal up-left neighbour
-                update_answer(&answer, &grid[x - 1][y + 1]);
-            } else if x == (x_range - 1) {
-                if y == 0u32 {
-                    // immediate left neighbour
-                    update_answer(&answer, &grid[x - 1][y]);
-                    // immeidate down neighbour
-                    update_answer(&answer, &grid[x][y - 1]);
-                    // diagonal down-left neighbour
-                    update_answer(&answer, &grid[x - 1][y - 1]);
-                } else {
-                    // immediate left neighbour
-                    update_answer(&answer, &grid[x - 1][y]);
-                    // immediate up neighbour
-                    update_answer(&answer, &grid[x][y + 1]);
-                    // immediate down neighbour
-                    update_answer(&answer, &grid[x][y - 1]);
-                    // diagonal up-left neighbour
-                    update_answer(&answer, &grid[x - 1][y + 1]);
-                    // diagonal down-left neighbour
-                    update_answer(&answer, &grid[x - 1][y - 1]);
-                }
-            } else if y == (y_range - 1) {
-                if x == 0u32 {
-                    // immediate right neighbour
-                    update_answer(&answer, &grid[x + 1][y]);
-                    // immediate up neighbour
-                    update_answer(&answer, &grid[x][y + 1]);
-                    // diagonal up-right neighbour
-                    update_answer(&answer, &grid[x + 1][y + 1]);
-                } else {
-                    // immediate left neighbour
-                    update_answer(&answer, &grid[x - 1][y]);
-                    // immediate right neighbour
-                    update_answer(&answer, &grid[x + 1][y]);
-                    // immediate up neighbour
-                    update_answer(&answer, &grid[x][y + 1]);
-                    // diagonal up-left neighbour
-                    update_answer(&answer, &grid[x - 1][y + 1]);
-                    // diagonal up-right neighbour
-                    update_answer(&answer, &grid[x + 1][y + 1]);
-                }
-            }
-        } else if x == 0u32 || y == 0u32 {
-            if x == 0u32 && y == 0u32 {
-                // top left corner
-                // only three neighbours
-                // immediate up neighbour
-                update_answer(&answer, &grid[x][y + 1]);
-                // immediate right neighbour
-                update_answer(&answer, &grid[x + 1][y]);
-                // diagonal down-right neighbour
-                update_answer(&answer, &grid[x + 1][y + 1]);
-            } else if y == 0u32 {
-                // immediate left neighbour
-                update_answer(&answer, &grid[x - 1][y]);
-                // immediate right neighbour
-                update_answer(&answer, &grid[x + 1][y]);
-                // immediate below neighbour
-                update_answer(&answer, &grid[x][y - 1]);
-                // diagonal left neighbour
-                update_answer(&answer, &grid[x - 1][y - 1]);
-                // diagonal right neighbour
-                update_answer(&answer, &grid[x + 1][y + 1]);
-            } else if x == 0u32 {
-                // immediate right neighbour
-                update_answer(&answer, &grid[x + 1][y]);
-                // immediate up neighbour
-                update_answer(&answer, &grid[x][y + 1]);
-                // immediate down neighbour
-                update_answer(&answer, &grid[x][y - 1]);
-                // diagonal up-right neighbour
-                update_answer(&answer, &grid[x + 1][y + 1]);
-                // diagonal down-right neighbour
-                update_answer(&answer, &grid[x + 1][y - 1]);
-            } 
-        } else {
-            // purely general non-corner case
-            // immediate left neighbour
-            update_answer(&answer, &grid[x - 1][y]);
-            // immediate right neighbour
-            update_answer(&answer, &grid[x + 1][y]);
-            // immediate below neighbour
-            update_answer(&answer, &grid[x][y - 1]);
-            // immediate above neighbour
-            update_answer(&answer, &grid[x][y + 1]);
-            // diagonal up-right neighbour
-            update_answer(&answer, &grid[x + 1][y + 1]);
-            // diagonal down-right neighbour
-            update_answer(&answer, &grid[x + 1][y - 1]);
-            // diagonal up-left neighbour
-            update_answer(&answer, &grid[x - 1][y + 1]);
-            // diagonal down-left neighbour
-            update_answer(&answer, &grid[x - 1][y - 1]);
-        }
+        // immediate left
+        update_answer(&answer, &grid[(x - 1, y)]);
+        // immediate right
+        update_answer(&answer, &grid[(x + 1, y)]);
+        // immediate up
+        update_answer(&answer, &grid[(x, y + 1)]);
+        // immediate down
+        update_answer(&answer, &grid[(x - 1, y)]);
+        // diagonal up-right
+        update_answer(&answer, &grid[(x + 1, y + 1)]);
+        // diagonal up-left
+        update_answer(&answer, &grid[(x - 1, y + 1)]);
+        // diagonal down-right
+        update_answer(&answer, &grid[(x + 1, y - 1)]);
+        // diagonal down-left
+        update_answer(&answer, &grid[(x - 1, y - 1)]);
         return answer;
     }
     pub fn update(&mut self) {
