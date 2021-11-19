@@ -60,6 +60,7 @@ impl Universe {
     }
     // default constructor
     pub fn new() -> Self {
+        utils::set_panic_hook();
         let x_range = 64u32;
         let y_range = 64u32;
         let mut grid = vec![vec![Cell::Dead; x_range as usize]; y_range as usize];
