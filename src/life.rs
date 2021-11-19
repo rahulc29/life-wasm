@@ -1,12 +1,31 @@
 use std::ops::Index;
+use std::fmt::{Display, Formatter, Result};
+#[wasm_bindgen]
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Cell {
     Dead = 0,
     Alive = 1,
 }
+#[wasm_bindgen]
 pub struct Universe {
     grid: Vec<Vec<Cell>>,
     x_range: u32,
     y_range: u32,
+}
+pub impl Display for Universe {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        for j in 0..y_range {
+            for i in 0..x_range {
+                let cell = &self[(i, j)];
+                match cell {
+                    Cell::Alive => write!(f, "◼"),
+                    Cell::Dead => write!(f, "◻")
+                };
+            }
+            write!(f, "\n");
+        }
+    }
 }
 pub impl Index<(u32, u32)> for Universe {
     fn index(&self, (x, y): (u32, u32)) -> Cell& {
@@ -26,13 +45,28 @@ pub impl Universe {
     pub fn grid(&self) -> &Vec<Vec<Cell>> {
         self.grid;
     } 
+    pub fn render(&self) -> String {
+        self.to_string();
+    }
     // default constructor
     pub fn new() -> Self {
+        let x_range = 64u32;
+        let y_range = 64u32;
+        let grid = vec![vec![Dead, x_range]; y_range];
+        for j in 0..y_range {
+            for i in 0..x_range {
+                // will produce initial pattern
+                if i % 3 == 0 || j % 7 == 0 {
+                    grid[(i, j)] = Cell::Alive;
+                } else {
+                    grid[(i, j)] = Cell::Dead;
+                }
+            }
+        }
         Self {
-            x_range: 30,
-            y_range: 30,
-            // initally all cells are dead
-            grid: vec![vec![Dead, x_range]; y_range],
+            x_range,
+            y_range,
+            grid,
         }
     }
     // private utility function to update answer
@@ -44,7 +78,7 @@ pub impl Universe {
     }
     // private utility to get number of alive cells for a give location
     fn alive_cells(&self, (x, y): (u32, u32)) -> u32 {
-        // TODO : Rewrite using macros
+        // TODO : Rewrite using loops?
         let mut answer = 0u32;
         // immediate left
         update_answer(&answer, &grid[(x - 1, y)]);
