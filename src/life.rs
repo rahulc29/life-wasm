@@ -1,3 +1,4 @@
+use std::ops::Index;
 pub enum Cell {
     Dead,
     Alive,
@@ -6,6 +7,11 @@ pub struct Universe {
     grid: Vec<Vec<Cell>>,
     x_range: u32,
     y_range: u32,
+}
+pub impl Index<(u32, u32)> for Universe {
+    fn index(&self, (x, y): (u32, u32)) {
+        return grid[x % self.x_range][y % self.y_range];
+    }
 }
 pub impl Universe {
     // getter
