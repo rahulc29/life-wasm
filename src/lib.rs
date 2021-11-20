@@ -1,8 +1,8 @@
 mod utils;
+use js_sys::Math;
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
 use wasm_bindgen::prelude::*;
-use js_sys::Math;
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -15,6 +15,7 @@ pub struct Universe {
     grid: Vec<Vec<Cell>>,
     x_range: u32,
     y_range: u32,
+    delta: Vec<(u32, u32)>,
 }
 impl Display for Universe {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
@@ -67,6 +68,9 @@ impl Universe {
     pub fn render(&self) -> String {
         return self.to_string();
     }
+    pub fn delta(&self) -> *const (u32, u32) {
+        return self.delta.as_ptr();
+    }
     // default constructor
     pub fn new() -> Self {
         utils::set_panic_hook();
@@ -87,6 +91,7 @@ impl Universe {
             x_range,
             y_range,
             grid,
+            delta: Vec::new(),
         }
     }
     // private utility function to update answer
@@ -120,7 +125,7 @@ impl Universe {
         Universe::update_answer(&mut answer, self[(x - 1, y - 1)]);
         return answer;
     }
-    pub fn update(&mut self) -> *const (u32, u32) {
+    pub fn update(&mut self) {
         let mut delta = Vec::new();
         // yes, `i` and `j` are intentionally interchanged
         // the tuple parameter is (x, y)
@@ -149,7 +154,7 @@ impl Universe {
                 }
             }
         }
-        return delta.as_ptr();
+        self.delta = delta;
     }
 }
 impl From<(u32, u32)> for Universe {
@@ -159,6 +164,7 @@ impl From<(u32, u32)> for Universe {
             y_range,
             // initally all cells are dead
             grid: vec![vec![Cell::Dead; x_range as usize]; y_range as usize],
+            delta: Vec::new(),
         }
     }
 }
