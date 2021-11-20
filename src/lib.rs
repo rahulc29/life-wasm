@@ -2,6 +2,7 @@ mod utils;
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
 use wasm_bindgen::prelude::*;
+use js_sys::Math;
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -23,9 +24,10 @@ impl Display for Universe {
                 match cell {
                     Cell::Alive => write!(f, "◼"),
                     Cell::Dead => write!(f, "◻"),
-                }.ok();
+                }
+                .ok();
             }
-            write!(f, "\n");
+            write!(f, "\n").ok();
         }
         Ok(())
     }
@@ -49,6 +51,13 @@ impl IndexMut<(u32, u32)> for Universe {
 }
 #[wasm_bindgen]
 impl Universe {
+    pub fn grid(&self) -> *const Cell {
+        // TODO : Implement `delta` based data transactions
+        self.grid[0].as_ptr()
+    }
+    pub fn get(&self, x: u32, y: u32) -> Cell {
+        return self[(x, y)];
+    }
     pub fn height(&self) -> u32 {
         return self.y_range;
     }
@@ -67,7 +76,7 @@ impl Universe {
         for j in 0..y_range {
             for i in 0..x_range {
                 // will produce initial pattern
-                if i % 3 == 0 || j % 7 == 0 {
+                if Math::random() > 0.5f64 {
                     grid[i as usize][j as usize] = Cell::Alive;
                 } else {
                     grid[i as usize][j as usize] = Cell::Dead;
