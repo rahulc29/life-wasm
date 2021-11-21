@@ -52,6 +52,12 @@ impl IndexMut<(u32, u32)> for Universe {
 }
 #[wasm_bindgen]
 impl Universe {
+    pub fn toggle(&mut self, x: u32, y: u32) {
+        self[(x, y)] = match self[(x, y)] {
+            Cell::Alive => Cell::Dead,
+            Cell::Dead => Cell::Alive,
+        };
+    }
     pub fn grid(&self) -> *const Cell {
         // TODO : Implement `delta` based data transactions
         self.grid[0].as_ptr()
