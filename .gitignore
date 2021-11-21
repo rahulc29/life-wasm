@@ -1,5 +1,5 @@
 /target/
 /.vscode/
 /.idea/
-# For the time being, ignore the `docs`
-# Will host to GHPages later
+/.bin/
+/node_modules/
