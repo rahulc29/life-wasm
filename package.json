@@ -24,10 +24,10 @@
     },
     "homepage": "https://github.com/rahulc29/life-wasm#readme",
     "dependencies": {
-        "life-wasm": "file:pkg/"
+        "life-wasm": "file:./pkg/"
     },
     "devDependencies": {
-        "life-wasm": "file:pkg/",
+        "life-wasm": "file:./pkg/",
         "webpack": "^4.29.3",
         "webpack-cli": "^3.1.0",
         "webpack-dev-server": "^3.1.5",
