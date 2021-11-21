@@ -6,6 +6,9 @@
     "directories": {
         "doc": "docs"
     },
+    "engines": {
+        "node": ">=0.14"
+    },
     "scripts": {
         "build": "webpack --config webpack.config.js",
         "start": "webpack-dev-server"
