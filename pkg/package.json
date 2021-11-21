@@ -1,0 +1,13 @@
+{
+  "name": "life-wasm",
+  "version": "0.1.0",
+  "files": [
+    "life_wasm_bg.wasm",
+    "life_wasm.js",
+    "life_wasm_bg.js",
+    "life_wasm.d.ts"
+  ],
+  "module": "life_wasm.js",
+  "types": "life_wasm.d.ts",
+  "sideEffects": false
+}
