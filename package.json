@@ -11,7 +11,8 @@
     },
     "scripts": {
         "build": "webpack --config webpack.config.js",
-        "start": "webpack-dev-server"
+        "start": "webpack-dev-server",
+        "heroku-prebuild" : "npm install --dev"
     },
     "repository": {
         "type": "git",
